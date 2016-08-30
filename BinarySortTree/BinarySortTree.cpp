@@ -1,14 +1,14 @@
-// BinarySortTree.cpp : Defines the entry point for the console application.
-//
 #include <cstdio>
 #include <cstring>
+#include <vector>
 
+template <typename T>
 struct Node
 {
-	char data;
+	T data;
 	Node* leftNode;
 	Node* rightNode;
-	Node(char d)
+	Node(T d)
 	{
 		data = d;
 		leftNode = nullptr;
@@ -16,37 +16,37 @@ struct Node
 	}
 };
 
+template <typename T>
 class BinarySortTree
 {
 public:
-	BinarySortTree(char* strData)
+	BinarySortTree(const std::vector<T>& vecData)
 	{
 		rootNode = nullptr;
-		int len = strlen(strData);
-		for (int i = 0; i < len; i++)
+		for (size_t i = 0; i < vecData.size(); i++)
 		{
-			Insert(strData[i]);
+			Insert(vecData[i]);
 		}
 	}
 
 
 
-	void Insert(char data)
+	void Insert(T data)
 	{
 		InsertRecursion(rootNode, data);
 	}
 
-	void Delete(char data)
+	void Delete(T data)
 	{
 		DeleteRecursion(rootNode, data, nullptr, true);
 	}
 
-	bool IsExist(char data)
+	bool IsExist(T data)
 	{
 		IsExistRecursion(rootNode, data);
 	}
 
-	Node* GetRoot()
+	Node<T>* GetRoot()
 	{
 		return rootNode;
 	}
@@ -58,20 +58,22 @@ public:
 	}
 
 private:
-	void InsertRecursion(Node*& node, char data)
+	void InsertRecursion(Node<T>*& node, T data)
 	{
 		if (node == nullptr)
 		{
-			node = new Node(data);
+			node = new Node<T>(data);
+			node->data = data;
+			node->leftNode = nullptr;
+			node->rightNode = nullptr;
 		}
-
 		else if (data < node->data)
 			InsertRecursion(node->leftNode, data);
 		else
 			InsertRecursion(node->rightNode, data);
 	}
 
-	void DeleteRecursion(Node* node, char data, Node* partentNode, bool isRight)
+	void DeleteRecursion(Node<T>*& node, T data, Node<T>*& partentNode, bool isRight)
 	{
 		if (node->data == data)
 		{
@@ -135,7 +137,7 @@ private:
 		}
 	}
 
-	bool IsExistRecursion(const Node* node, char data)
+	bool IsExistRecursion(const Node<T>* node, T data)
 	{
 		if (node->data == data)
 		{
@@ -148,7 +150,7 @@ private:
 	}
 
 
-	bool CompareRecursion(Node* node, Node* nodeCompared)
+	bool CompareRecursion(Node<T>* node, Node<T>* nodeCompared)
 	{
 		if (node == nullptr && nodeCompared == nullptr)
 			return true;
@@ -157,7 +159,6 @@ private:
 		{
 			return false;
 		}
-
 		if (node->data != nodeCompared->data)
 		{
 			return false;
@@ -174,7 +175,7 @@ private:
 	}
 
 	// data
-	Node* rootNode;
+	Node<T>* rootNode;
 };
 
 void testTree()
@@ -186,13 +187,28 @@ void testTree()
 	{
 		char strInput[15];
 		scanf("%s", strInput);
-
-		BinarySortTree binarySortTree = BinarySortTree(strInput);
+		int len = strlen(strInput);
+		std::vector<char> dataVec;
+		for (int i = 0; i < len; i++)
+		{
+			dataVec.push_back(strInput[i]);
+		}
+		BinarySortTree<char> binarySortTree = BinarySortTree<char>(dataVec);
 
 		while (count--)
 		{
 			scanf("%s", strInput);
-			BinarySortTree comparedBinarySortTree = BinarySortTree(strInput);
+			if (strlen(strInput) != len)
+			{
+				printf("NO\n");
+				continue;
+			}
+			dataVec.clear();
+			for (int i = 0; i < len; i++)
+			{
+				dataVec.push_back(strInput[i]);
+			}
+			BinarySortTree<char> comparedBinarySortTree = BinarySortTree<char>(dataVec);
 
 			if (binarySortTree.Compare(comparedBinarySortTree)) printf("YES\n");
 			else printf("NO\n");
